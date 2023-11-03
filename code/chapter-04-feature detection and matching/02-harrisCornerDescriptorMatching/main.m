@@ -1,8 +1,11 @@
 %此程序完整实现了Harris角点检测、block描述子提取、描述子匹配
 %Lin Zhang, Tongji Univ., Jun. 2022
+
+clc;clear;
 imgColor1 = imread('sse1.bmp');
 imgColor2 = imread('sse2.bmp');    
-% 
+
+% wwd:需要转化为灰度图后才可执行后续过程 
 I1 = rgb2gray(imgColor1);
 I2 = rgb2gray(imgColor2);
     

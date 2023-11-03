@@ -10,14 +10,18 @@ descriptorNums2 = size(descriptors2In,2);
 
 %初始化好描述子集合比对距离矩阵
 scores = zeros(descriptorNums1, descriptorNums2);
+
 %在这个循环中，每次从第一个描述子集合中取出一个描述子currentDescriptor，计算它与descriptors2In中每个描述子的SSD距离
 for descriptorIndex = 1: descriptorNums1
     %获取到features1中当前一个描述子currentDescriptor
     currentDescriptor = descriptors1In(:, descriptorIndex);
+
+    % wwd: 这里是将currentDescriptor在第1维度(行)重复descriptorNums2次(即将列复制descriptorNums2)
     tmpDescriptorMat = repmat(currentDescriptor,[1,descriptorNums2]);
     distsCurrentDescriptor2features2 = sum((tmpDescriptorMat - descriptors2In).^2);
     scores(descriptorIndex,:) = distsCurrentDescriptor2features2;
 end
+
 %对于每一个特征点，都留下来两个与它最接近的，目的是为了测试歧义性，只有当最匹配的距离与次匹配距离的比例小很多的时候，才接受
 %partialSort这个函数，返回scores这个矩阵中，每一行的最大两个值以及它们所在的位置，并且进行了转置
 [matchMetric, topTwoIndices] = vision.internal.partialSort(scores, 2, 'ascend');
@@ -40,9 +44,10 @@ indexPairs  = indexPairs(:, unambiguousIndices);
 %%%%%%%%%%%%%%%%%%
 
 %下面这部分是双向确认原则，要看看descriptors2In中的某个描述子，它"最喜欢"的descriptors1In的描述子是不是也是最喜欢它的
+% wwd：indexPairs第一行是第一幅图的索引，第二行是第二幅图的索引
+% idx保存了与描述子集2中的描述子距离最小的描述子集1中的描述子的索引
 [~, idx] = min(scores(:,indexPairs(2,:)));
 uniqueIndices = idx == indexPairs(1,:);
-
 indexPairs  = indexPairs(:, uniqueIndices);
 indexPairs = indexPairs';
 
