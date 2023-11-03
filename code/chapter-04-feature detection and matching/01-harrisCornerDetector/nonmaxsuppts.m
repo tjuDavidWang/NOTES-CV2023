@@ -3,6 +3,8 @@ function [rows,cols] = nonmaxsuppts(cornernessMap, radius, thresh)
     %sze，要执行非局部极大值抑制的窗口边长
     sze = 2*radius+1;       
     %通过函数ordfilt2，localMaxMap中某个位置处的值为cornernessMap中以该位置为中心、在边长为sze的正方邻域内的最大值
+    
+    %wwd:这里的ordfilt2(cornernessMap,121,[11,11])是从[11,11]中排好序，选出其最后一个(最大值)
     localMaxMap = ordfilt2(cornernessMap,sze^2,ones(sze)); 
 
     %做一个图像边界掩膜，最终会去除掉边界位置处的角点
