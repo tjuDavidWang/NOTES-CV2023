@@ -4,24 +4,32 @@
 % H，点集之间的摄影矩阵，使得x2 = H*x1.
 % inliers，索引，指明pp1Homo和pp2Homo的哪些列是H的一致集
 
+% pp1Homo，pp2Homo都是齐次坐标
 % pp1Homo，pp2Homo必须要有相同的列，即相同的点数，且列数要大于4，因为最少需要4个点对才能唯一确定出平面间的射影变换矩阵
 function [H, inliers] = ransacfithomography(pp1Homo, pp2Homo, t)    
     s = 4;  %最少需要4个点对能唯一确定两个平面间的射影变换
     
-    fittingfn = @homography2d; %从数据点进行模型估计的函数句柄
-    distfn    = @homogdist2d; %当有了当前拟合模型之后，如何计算某点误差的函数句柄
-    degenfn   = @isdegenerate; %判断用于模型估计的点是否是合理的函数句柄，比如，如果给定的4个点都是共线的，那是不可能确定出射影变换的
+    fittingfn = @homography2d; % 从数据点进行模型估计
+    distfn    = @homogdist2d;  % 计算模型中某点误差
+    degenfn   = @isdegenerate; % 判断用于模型估计的点是否是合理的
+                               % 如果给定的4个点都是共线的，那是不可能确定出射影变换的
     
     % 喂给ransac函数的数据是6xN的格式
     inliers = ransac([pp1Homo; pp2Homo], fittingfn, distfn, degenfn, s, t);
    
     %最后，从最大的一致集中再用最小二乘法拟合出H
     H = homography2d([pp1Homo(:,inliers); pp2Homo(:,inliers)]);
-%----------------------------------------------------------------------
-% x是数据集合，每一列为一个点对，每列是6维向量，前3行为第一个点，后三行为第2个点。
-% 该函数计算数据点在当前射影矩阵H下的匹配误差，该误差为双向的。
-% 比如x1与x1'对应，那么需要计算||x1'-Hx1||+||x1-H^(-1)x1'||
-% 返回数据x中与当前射影矩阵H相一致的的内点索引
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 计算模型中某点的误差[双向计算]
+% 比如x1与x1'对应，那么需要计算||x1'-Hx1||^2+||x1-H^(-1)x1'||^2
+% Input
+%   H: 射影矩阵。
+%   x: 数据集合，6xN的矩阵，其中前三行是x1的齐次坐标，后三行是x2的齐次坐标。
+%   t: 误差阈值。
+% Return
+%   inliers: 与当前射影矩阵H相一致的的内点索引。
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function inliers = homogdist2d(H, x, t)
     
     x1 = x(1:3,:);   % Extract x1 and x2 from x
@@ -29,6 +37,7 @@ function inliers = homogdist2d(H, x, t)
     
     % Calculate, in both directions, the transfered points    
     Hx1    = H*x1;
+    % (wwd) 避免计算矩阵的逆，相当于是invHx2 = inv(H) * x2;
     invHx2 = H\x2;
     
     %计算距离之前转换成归一化齐次坐标    
@@ -40,8 +49,13 @@ function inliers = homogdist2d(H, x, t)
     d2 = sum((x1-invHx2).^2)  + sum((x2-Hx1).^2);
     inliers = find(abs(d2) < t);    
     
-%----------------------------------------------------------------------
-% 4个点对，判断两组4个点中，是否有3点共线的情况
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 判断四个点对中是否有三点共线 
+% Input
+%  x: [6,4],共有8个点，前三行是I1的，后三行是I2的，列表示点
+% Return
+%   r: true/false
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function r = isdegenerate(x)
 
     x1 = x(1:3,:);    % Extract x1 and x2 from x

@@ -17,11 +17,16 @@ function inliers = ransac(x, fittingfn, distfn, degenfn, s, t)
     
     while N > trialcount
         %随机选取s个点来拟合模型，需要检查该随机数据集合是否为不能拟合出模型的退化集合
+        % (wwd)模型退化
+        % 从该子集中不能得到一个唯一的、合理的模型参数估计
+        % 在代码中是四点中有三点共线or模型无法被构建出来
         degenerate = 1;
         count = 1;
+        %%%%%%%%%%%%%%%%%%%%%%%%%模型初始化%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         while degenerate
 		    ind = randsample(npts, s); %从npts点中，随机选取s个，对于射影矩阵估计问题来说，s=4
             % 判断ind所索引的这4个点，是否是退化的，是否退化的判断函数为degenfn
+            % (wwd)：就是4点里面出现了三点共线
             degenerate = feval(degenfn, x(:,ind));
             
             if ~degenerate %当前的4个点是非退化的，即可以拟合出一个模型来
@@ -40,7 +45,8 @@ function inliers = ransac(x, fittingfn, distfn, degenfn, s, t)
                 break
             end
         end
-        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%更新一致集%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         % 计算出当前拟合模型M的一致集inliers，当然inliers只是一些索引，用于表明数据x中符合当前M的内点的索引
         inliers = feval(distfn, M, x, t);
         ninliers = length(inliers); %当前模型一致集中元素的个数
@@ -49,8 +55,11 @@ function inliers = ransac(x, fittingfn, distfn, degenfn, s, t)
             bestscore = ninliers;  
             bestinliers = inliers;
             bestM = M;
-            
-            % 根据当前模型的一致集的元素个数，可以动态调整所需最大迭代次数。需要注意到：当前一致集越大，实际上所需的外层迭代会越少
+
+            % (wwd) 对于迭代次数的优化
+            % 使用了一个较为严谨的概率模型
+            % 根据当前模型的一致集的元素个数，可以动态调整所需最大迭代次数。
+            % 需要注意到：当前一致集越大，实际上所需的外层迭代会越少
             fracinliers =  ninliers/npts;
             pNoOutliers = 1 -  fracinliers^s;
             pNoOutliers = max(eps, pNoOutliers);  % Avoid division by -Inf
