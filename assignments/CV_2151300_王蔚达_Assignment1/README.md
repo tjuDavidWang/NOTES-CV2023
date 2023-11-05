@@ -11,3 +11,5 @@ Below is a description of the files contained in this folder and their respectiv
 3. **SIFT.ipynb**: Provides the solution for Problem 5.
 4. **ORB.cpp**: Implements the solution for Problem 6.
 5. **sse1.bmp** and **sse2.bmp**: These are image files utilized in both Problems 5 and 6.
+
+I referenced https://blog.csdn.net/weixin_54583016/article/details/121424060 for opencv environment configuration.
