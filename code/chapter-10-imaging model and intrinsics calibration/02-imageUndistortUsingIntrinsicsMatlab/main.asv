@@ -1,0 +1,44 @@
+% 该程序演示如何利用相机的内参数来进行图像的畸变去除
+% 张林，同济大学，2023年4月
+% 相机的内参数已经通过前期标定步骤获得，并已存储在磁盘中为文件'cameraParams.mat'
+
+
+%%%%%%%%%%%%%%%%%%% 导入相机参数数据 %%%%%%%%%%%%%%%%%%%
+% 'cameraParams'是一个cameraParameters对象，包含了相机标定的结果。
+% 这些参数用于图像的畸变去除和3D场景重建等任务。
+
+% ImageSize: 图像的大小，格式为[高度, 宽度]。
+% RadialDistortion: 径向畸变系数，影响图像边缘[k1,k2,k3]。
+% TangentialDistortion: 切向畸变系数，影响图像中心[rou1,rou2]。
+% WorldPoints: 标定时用的世界坐标点[54,2]。
+% WorldUnits: 世界坐标点的单位，这里是'millimeters'。
+% EstimateSkew: 是否估计了图像的倾斜。
+% NumRadialDistortionCoefficients: 径向畸变系数的数量。
+% EstimateTangentialDistortion: 是否估计了切向畸变。
+% ReprojectionErrors: 重投影误差，表示实际点和投影点之间的差异。
+% DetectedKeypoints: 检测到的关键点。
+% RotationVectors: 旋转向量，用于描述3D空间中的旋转。
+% K: 内参矩阵，用于将3D点投影到2D图像平面。
+% NumPatterns: 使用的标定图案数量。
+% Intrinsics: 内参数对象，包含焦距和主点等。
+% PatternExtrinsics: 每个标定图案的外参，包括旋转和平移。
+% FocalLength: 相机的焦距，单位是像素。
+% PrincipalPoint: 相机的主点，即图像中心。
+% Skew: 图像的倾斜系数。
+% MeanReprojectionError: 平均重投影误差，衡量标定的准确性。
+% RejectedPoints: 被拒绝的点，未用于标定的点。
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+camParamsFile = load('cameraParams.mat');
+camPrams = camParamsFile.cameraParams;
+
+%读入由同款相机拍摄的原始图像，该图像带有明显畸变
+oriImg = imread('img.png');
+
+%对原始输入图像进行图像去畸变操作，这里需要利用已经获得的相机内参数
+undistortedImage = undistortImage(oriImg, camPrams);
+
+%显示结果
+figure; 
+imshowpair(oriImg, undistortedImage, 'montage');
+title('Original Image (left) vs. Corrected Image (right)');
+
