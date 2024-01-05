@@ -1,7 +1,9 @@
 # NeRF-based 3D Reconstruction
 
 Wang Weida 2151300
+
 Mao Lingjun 2053058
+
 Liang Xin 2053246
 
 ## Requirements
