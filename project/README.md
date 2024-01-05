@@ -30,6 +30,8 @@ In this task, you are required to reconstruct a scene based on NeRF
 8. https://zhuanlan.zhihu.com/p/648087218
 9. https://www.youtube.com/watch?v=3TWxO1PftMc
 
+## Special Acknowledgments
 
+Special thanks to teaching assistant **Fengyi Zhang** for providing guidance, and to **Chen Xialu**, an student from College of Design and Innovation, Tongji University, for offering us the efficient and effective baseline of Luma AI. Also, thanks to the great teamwork of our two teammates **Mao and Liang**.
 
 You can also view our project at my blog: https://wwd.zeabur.app/article/homework:cv-nerf-based-3d-restruction.
