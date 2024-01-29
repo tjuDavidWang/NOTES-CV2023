@@ -2,6 +2,8 @@
 
 本仓库是我在同济大学2023秋季学期参加张林老师主讲的计算机视觉（Computer Vision）课程的个人学习记录。这里我将分享我的课程笔记、代码实践和作业解答，旨在与同学们交流学习经验，共同进步。
 
+NEWS: 课程笔记已经整理并更新至[博客](https://wwd.zeabur.app/article/notes:computer-vision)中！
+
 ## 课程资料来源
 
 - 课程官方教材及代码示例：https://github.com/csLinZhang/CVBook
