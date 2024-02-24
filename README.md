@@ -14,6 +14,7 @@ NEWS: 课程笔记已经整理并更新至[博客](https://wwd.zeabur.app/articl
 - `/assignments` - 我完成的课程作业会在这个文件夹中更新，用于记录我的学习成果。
 - `/code` - 这里放置了我在学习过程中编写和调试的代码，可能包括课程作业和额外的实验。
 - `/notes` - 包含了对课程内容的总结和笔记，可能会有我个人对某些概念的理解和扩展。
+- `/project` - 期末大项目，基于NeRF的三维重建，[项目链接](https://cslinzhang.gitee.io/home/CV/Projects/nerf.htm)。
 
 ## 使用说明
 
